@@ -9,6 +9,7 @@ import {
   hasValidMoves,
   hasTileValue,
 } from '../game-logic/grid';
+import { playMergeSound, playGameOverSound } from '../services/sound';
 
 type Status = 'playing' | 'won' | 'gameover';
 
@@ -46,7 +47,7 @@ function reducer(state: GameState, action: GameAction): GameState {
       if (state.status === 'gameover') return state;
 
       const { grid: movedGrid, scoreGained, moved } = moveGrid(state.grid, action.direction);
-      if (!moved) return state; // swipe nggak menghasilkan perubahan, abaikan
+      if (!moved) return state;
 
       const newGrid = spawnRandomTile(movedGrid);
       const newScore = state.score + scoreGained;
