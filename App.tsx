@@ -1,6 +1,6 @@
 // App.tsx
 import React, { useEffect, useRef } from 'react';
-import { StyleSheet, Text, View, Pressable, Switch } from 'react-native';
+import { StyleSheet, Text, View, Pressable, Switch, Alert } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { Board } from './src/components/Board';
@@ -8,6 +8,7 @@ import { useGameState } from './src/hooks/useGameState';
 import { useHighScore } from './src/hooks/useHighScore';
 import { initSounds, playMergeSound, playGameOverSound } from './src/services/sound';
 import { getTheme } from './src/theme/colors';
+
 
 export default function App() {
   const { state, swipe, restart, continueAfterWin } = useGameState();
@@ -43,6 +44,22 @@ export default function App() {
     );
   }
 
+  function handleRestartPress() {
+    if (state.score === 0) {
+      // Kalau skor masih 0, langsung restart tanpa nanya (belum ada progress yang hilang)
+      restart();
+      return;
+    }
+    Alert.alert(
+      'Restart Permainan?',
+      'Progress permainan saat ini akan hilang.',
+      [
+        { text: 'Batal', style: 'cancel' },
+        { text: 'Restart', style: 'destructive', onPress: restart },
+      ]
+    );
+  }
+
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
@@ -59,7 +76,7 @@ export default function App() {
           </View>
           <Pressable
             style={[styles.restartButton, { backgroundColor: theme.buttonBackground }]}
-            onPress={restart}
+            onPress={handleRestartPress}
           >
             <Text style={styles.restartText}>Restart</Text>
           </Pressable>
