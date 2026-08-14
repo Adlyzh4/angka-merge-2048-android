@@ -82,7 +82,7 @@ export default function App() {
           </Pressable>
         </View>
 
-        <Board grid={state.grid} onSwipe={swipe} />
+        <Board tiles={state.tiles} onSwipe={swipe} />
 
         <View style={styles.settingsRow}>
           <View style={styles.settingItem}>

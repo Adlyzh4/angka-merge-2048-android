@@ -1,52 +1,59 @@
 // src/components/Tile.tsx
-import React, { memo, useEffect, useRef } from 'react';
+import React, { memo, useEffect } from 'react';
 import { StyleSheet, Text } from 'react-native';
 import Animated, {
   useSharedValue,
   useAnimatedStyle,
-  withSequence,
   withTiming,
   withSpring,
+  withSequence,
 } from 'react-native-reanimated';
-import { getTileColor } from '../constants/gameConfig';
+import { getTileColor, TILE_GAP } from '../constants/gameConfig';
 
 interface TileProps {
   value: number;
+  row: number;
+  col: number;
+  cellSize: number;
+  isNew?: boolean;
+  isMerged?: boolean;
 }
 
-function TileComponent({ value }: TileProps) {
+function TileComponent({ value, row, col, cellSize, isNew, isMerged }: TileProps) {
   const { bg, text } = getTileColor(value);
   const fontSize = value >= 1000 ? 22 : value >= 100 ? 26 : 32;
-  const scale = useSharedValue(1);
-  const prevValue = useRef(value);
 
+  const translateX = useSharedValue(col * cellSize);
+  const translateY = useSharedValue(row * cellSize);
+  const scale = useSharedValue(isNew ? 0.3 : 1);
+
+  // Animasi GESER — jalan tiap kali posisi row/col berubah
   useEffect(() => {
-    if (prevValue.current === 0 && value !== 0) {
-      // 1. TILE BARU MUNCUL: Dibuat lebih halus & tidak terlalu membal
-      scale.value = 0.5; // Mulai dari 0.5 (tidak terlalu kecil dari awal)
-      scale.value = withSpring(1, { 
-        damping: 18,     // Dinaikkan (default ~10) -> mengurangi efek membal/vibrasi
-        stiffness: 150,  // Diturunkan (default ~100) -> membuat gerakan lebih lambat & smooth
-      });
-    } else if (prevValue.current !== value && value !== 0) {
-      // 2. TILE MERGE: Ukuran maksimal diturunkan dan durasi diperlembut
-      scale.value = withSequence(
-        withTiming(1.15, { duration: 120 }), // Diturunkan dari 1.15 ke 1.08 agar tidak terlalu besar
-        withTiming(1, { duration: 120 })    // Durasi dinaikkan dari 90 ke 120ms agar transisi halus
-      );
+    translateX.value = withTiming(col * cellSize, { duration: 120 });
+    translateY.value = withTiming(row * cellSize, { duration: 120 });
+  }, [row, col]);
+
+  // Animasi MUNCUL (tile baru) atau BOUNCE (habis merge)
+  useEffect(() => {
+    if (isNew) {
+      scale.value = 0.3;
+      scale.value = withSpring(1, { damping: 12, stiffness: 220 });
+    } else if (isMerged) {
+      scale.value = withSequence(withTiming(1.3, { duration: 120 }), withTiming(1, { duration: 120 }));
     }
-    prevValue.current = value;
-  }, [value]);
+  }, [isNew, isMerged]);
 
   const animatedStyle = useAnimatedStyle(() => ({
+    left: translateX.value + TILE_GAP / 2,
+    top: translateY.value + TILE_GAP / 2,
     transform: [{ scale: scale.value }],
   }));
 
   return (
-    <Animated.View style={[styles.tile, { backgroundColor: bg }, animatedStyle]}>
-      {value !== 0 && (
-        <Text style={[styles.tileText, { color: text, fontSize }]}>{value}</Text>
-      )}
+    <Animated.View
+      style={[styles.tile, { backgroundColor: bg, width: cellSize - TILE_GAP, height: cellSize - TILE_GAP }, animatedStyle]}
+    >
+      <Text style={[styles.tileText, { color: text, fontSize }]}>{value}</Text>
     </Animated.View>
   );
 }
@@ -55,14 +62,10 @@ export const Tile = memo(TileComponent);
 
 const styles = StyleSheet.create({
   tile: {
-    flex: 1,
-    aspectRatio: 1,
+    position: 'absolute',
     borderRadius: 6,
     justifyContent: 'center',
     alignItems: 'center',
-    margin: 4,
   },
-  tileText: {
-    fontWeight: 'bold',
-  },
+  tileText: { fontWeight: 'bold' },
 });

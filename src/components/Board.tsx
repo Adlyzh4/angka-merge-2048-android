@@ -2,72 +2,77 @@
 import React from 'react';
 import { StyleSheet, View, Dimensions } from 'react-native';
 import { Gesture, GestureDetector } from 'react-native-gesture-handler';
+import { runOnJS } from 'react-native-reanimated';
 import { Tile } from './Tile';
-import { Grid, Direction } from '../game-logic/grid';
-import { SWIPE_THRESHOLD, BOARD_PADDING } from '../constants/gameConfig';
+import { TileEntity, Direction } from '../game-logic/tileEngine';
+import { GRID_SIZE } from '../game-logic/grid';
+import { SWIPE_THRESHOLD, BOARD_PADDING, TILE_GAP } from '../constants/gameConfig';
 
 interface BoardProps {
-  grid: Grid;
+  tiles: TileEntity[];
   onSwipe: (direction: Direction) => void;
 }
 
 const { width } = Dimensions.get('window');
 const BOARD_SIZE = Math.min(width - 32, 360);
+const INNER_SIZE = BOARD_SIZE - BOARD_PADDING * 2;
+const CELL_SIZE = INNER_SIZE / GRID_SIZE;
 
-export function Board({ grid, onSwipe }: BoardProps) {
+export function Board({ tiles, onSwipe }: BoardProps) {
   const panGesture = Gesture.Pan()
     .minDistance(SWIPE_THRESHOLD)
     .onEnd((event) => {
       'worklet';
       const { translationX, translationY } = event;
-
       if (Math.abs(translationX) > Math.abs(translationY)) {
-        if (translationX > 0) {
-          runOnJSWrapper(onSwipe, 'right');
-        } else {
-          runOnJSWrapper(onSwipe, 'left');
-        }
+        runOnJS(onSwipe)(translationX > 0 ? 'right' : 'left');
       } else {
-        if (translationY > 0) {
-          runOnJSWrapper(onSwipe, 'down');
-        } else {
-          runOnJSWrapper(onSwipe, 'up');
-        }
+        runOnJS(onSwipe)(translationY > 0 ? 'down' : 'up');
       }
     });
+
+  const backgroundCells = Array.from({ length: GRID_SIZE * GRID_SIZE });
 
   return (
     <GestureDetector gesture={panGesture}>
       <View style={[styles.board, { width: BOARD_SIZE, height: BOARD_SIZE }]}>
-        {grid.map((row, rowIndex) => (
-          <View key={rowIndex} style={styles.row}>
-            {row.map((value, colIndex) => (
-              <Tile key={`${rowIndex}-${colIndex}`} value={value} />
-            ))}
-          </View>
-        ))}
+        <View style={{ width: INNER_SIZE, height: INNER_SIZE }}>
+          {backgroundCells.map((_, idx) => {
+            const r = Math.floor(idx / GRID_SIZE);
+            const c = idx % GRID_SIZE;
+            return (
+              <View
+                key={idx}
+                style={{
+                  position: 'absolute',
+                  left: c * CELL_SIZE + TILE_GAP / 2,
+                  top: r * CELL_SIZE + TILE_GAP / 2,
+                  width: CELL_SIZE - TILE_GAP,
+                  height: CELL_SIZE - TILE_GAP,
+                  borderRadius: 6,
+                  backgroundColor: 'rgba(238, 228, 218, 0.35)',
+                }}
+              />
+            );
+          })}
+
+          {tiles.map((t) => (
+            <Tile
+              key={t.id}
+              value={t.value}
+              row={t.row}
+              col={t.col}
+              cellSize={CELL_SIZE}
+              isNew={t.isNew}
+              isMerged={t.isMerged}
+            />
+          ))}
+        </View>
       </View>
     </GestureDetector>
   );
 }
 
-// Helper wajib karena worklet (jalan di UI thread) tidak boleh langsung
-// panggil fungsi JS biasa tanpa runOnJS
-import { runOnJS } from 'react-native-reanimated';
-function runOnJSWrapper(fn: (direction: Direction) => void, direction: Direction) {
-  'worklet';
-  runOnJS(fn)(direction);
-}
-
 const styles = StyleSheet.create({
-  board: {
-    backgroundColor: '#BBADA0',
-    borderRadius: 8,
-    padding: BOARD_PADDING,
-    flexDirection: 'column',
-  },
-  row: {
-    flex: 1,
-    flexDirection: 'row',
-  },
+  board: { backgroundColor: '#BBADA0', borderRadius: 8, padding: BOARD_PADDING },
 });
