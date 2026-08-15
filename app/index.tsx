@@ -2,13 +2,19 @@
 import React from 'react';
 import { View, Text, Pressable, StyleSheet, Alert, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useHighScore } from '../src/hooks/useHighScore';
 import { getTheme } from '../src/theme/colors';
 
 export default function MenuScreen() {
-  const { userData, isLoaded } = useHighScore();
+  const { userData, isLoaded, reload } = useHighScore();
   const theme = getTheme(userData.settings.darkMode);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      reload();
+    }, [reload])
+  );
 
   function handleExit() {
     Alert.alert('Keluar Aplikasi?', 'Kamu yakin mau keluar dari Angka Merge 2048?', [

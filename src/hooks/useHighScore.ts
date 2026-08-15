@@ -56,5 +56,9 @@ export function useHighScore() {
     setUserData(fresh);
   }, []);
 
-  return { userData, isLoaded, updateAfterGame, toggleSound, toggleDarkMode, resetProgress };
+  const reload = useCallback(() => {
+    loadUserData().then(setUserData);
+  }, []);
+
+  return { userData, isLoaded, updateAfterGame, toggleSound, toggleDarkMode, resetProgress, reload };
 }

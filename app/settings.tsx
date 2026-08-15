@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, Text, Pressable, Switch, StyleSheet, Alert, Share, Linking } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { router } from 'expo-router';
+import { router, useFocusEffect } from 'expo-router';
 import { useHighScore } from '../src/hooks/useHighScore';
 import { getTheme } from '../src/theme/colors';
 
@@ -11,8 +11,14 @@ const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.metaun
 const APP_VERSION = '1.0.0';
 
 export default function SettingsScreen() {
-  const { userData, isLoaded, toggleSound, toggleDarkMode, resetProgress } = useHighScore();
+  const { userData, isLoaded, toggleSound, toggleDarkMode, resetProgress, reload } = useHighScore();
   const theme = getTheme(userData.settings.darkMode);
+
+  useFocusEffect(
+    React.useCallback(() => {
+      reload();
+    }, [reload])
+  );
 
   function handleResetProgress() {
     Alert.alert(
