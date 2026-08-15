@@ -103,17 +103,6 @@ export default function GameScreen() {
 
       <Board tiles={state.tiles} onSwipe={swipe} />
 
-      <View style={styles.settingsRow}>
-        <View style={styles.settingItem}>
-          <Text style={{ color: theme.textPrimary }}>Suara</Text>
-          <Switch value={userData.settings.soundEnabled} onValueChange={toggleSound} />
-        </View>
-        <View style={styles.settingItem}>
-          <Text style={{ color: theme.textPrimary }}>Mode Gelap</Text>
-          <Switch value={userData.settings.darkMode} onValueChange={toggleDarkMode} />
-        </View>
-      </View>
-
       {state.status === 'won' && (
         <View style={styles.overlay}>
           <Text style={styles.overlayText}>Kamu Menang! 🎉</Text>

@@ -1,6 +1,6 @@
 // src/hooks/useHighScore.ts
 import { useState, useEffect, useCallback } from 'react';
-import { loadUserData, saveUserData, UserData, defaultUserData } from '../services/storage';
+import { loadUserData, saveUserData, resetUserData, UserData, defaultUserData } from '../services/storage';
 
 export function useHighScore() {
   const [userData, setUserData] = useState<UserData>(defaultUserData);
@@ -51,5 +51,10 @@ export function useHighScore() {
     });
   }, []);
 
-  return { userData, isLoaded, updateAfterGame, toggleSound, toggleDarkMode };
+  const resetProgress = useCallback(async () => {
+  const fresh = await resetUserData();
+    setUserData(fresh);
+  }, []);
+
+  return { userData, isLoaded, updateAfterGame, toggleSound, toggleDarkMode, resetProgress };
 }

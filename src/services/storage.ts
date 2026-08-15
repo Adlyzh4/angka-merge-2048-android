@@ -41,3 +41,8 @@ export async function saveUserData(data: UserData): Promise<void> {
     console.error('Gagal simpan user data:', error);
   }
 }
+
+export async function resetUserData(): Promise<UserData> {
+  await saveUserData(defaultUserData);
+  return defaultUserData;
+}
