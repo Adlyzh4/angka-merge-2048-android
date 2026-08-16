@@ -11,6 +11,7 @@ import { SWIPE_THRESHOLD, BOARD_PADDING, TILE_GAP } from '../constants/gameConfi
 interface BoardProps {
   tiles: TileEntity[];
   onSwipe: (direction: Direction) => void;
+  reduceMotion?: boolean;
 }
 
 const { width } = Dimensions.get('window');
@@ -18,7 +19,7 @@ const BOARD_SIZE = Math.min(width - 32, 360);
 const INNER_SIZE = BOARD_SIZE - BOARD_PADDING * 2;
 const CELL_SIZE = INNER_SIZE / GRID_SIZE;
 
-export function Board({ tiles, onSwipe }: BoardProps) {
+export function Board({ tiles, onSwipe, reduceMotion }: BoardProps) {
   const panGesture = Gesture.Pan()
     .minDistance(SWIPE_THRESHOLD)
     .onEnd((event) => {
@@ -65,6 +66,7 @@ export function Board({ tiles, onSwipe }: BoardProps) {
               cellSize={CELL_SIZE}
               isNew={t.isNew}
               isMerged={t.isMerged}
+              reduceMotion={reduceMotion}
             />
           ))}
         </View>

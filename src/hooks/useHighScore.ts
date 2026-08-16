@@ -51,6 +51,17 @@ export function useHighScore() {
     });
   }, []);
 
+  const toggleReduceMotion = useCallback(() => {
+    setUserData((prev) => {
+      const updated = {
+        ...prev,
+        settings: { ...prev.settings, reduceMotion: !prev.settings.reduceMotion },
+      };
+      saveUserData(updated);
+      return updated;
+    });
+  }, []);
+
   const resetProgress = useCallback(async () => {
   const fresh = await resetUserData();
     setUserData(fresh);
@@ -60,5 +71,5 @@ export function useHighScore() {
     loadUserData().then(setUserData);
   }, []);
 
-  return { userData, isLoaded, updateAfterGame, toggleSound, toggleDarkMode, resetProgress, reload };
+  return { userData, isLoaded, updateAfterGame, toggleSound, toggleDarkMode, resetProgress, reload, toggleReduceMotion };
 }

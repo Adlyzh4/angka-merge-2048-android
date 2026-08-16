@@ -1,18 +1,21 @@
 // app/index.tsx
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, Alert, BackHandler } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { useHighScore } from '../src/hooks/useHighScore';
 import { getTheme } from '../src/theme/colors';
+import { loadGameProgress } from '../src/services/storage';
 
 export default function MenuScreen() {
   const { userData, isLoaded, reload } = useHighScore();
+  const [hasSavedGame, setHasSavedGame] = useState(false);
   const theme = getTheme(userData.settings.darkMode);
 
   useFocusEffect(
-    React.useCallback(() => {
+    useCallback(() => {
       reload();
+      loadGameProgress().then((data) => setHasSavedGame(!!data));
     }, [reload])
   );
 
@@ -21,6 +24,21 @@ export default function MenuScreen() {
       { text: 'Batal', style: 'cancel' },
       { text: 'Keluar', style: 'destructive', onPress: () => BackHandler.exitApp() },
     ]);
+  }
+
+  function handleNewGame() {
+    if (hasSavedGame) {
+      Alert.alert('Mulai Game Baru?', 'Progress permainan yang tersimpan akan hilang.', [
+        { text: 'Batal', style: 'cancel' },
+        {
+          text: 'Mulai Baru',
+          style: 'destructive',
+          onPress: () => router.push({ pathname: '/game', params: { mode: 'new' } }),
+        },
+      ]);
+    } else {
+      router.push({ pathname: '/game', params: { mode: 'new' } });
+    }
   }
 
   if (!isLoaded) {
@@ -39,12 +57,26 @@ export default function MenuScreen() {
       </Text>
 
       <View style={styles.menuList}>
-        <Pressable
-          style={[styles.menuButton, styles.primaryButton]}
-          onPress={() => router.push('/game')}
-        >
-          <Text style={styles.primaryButtonText}>Main</Text>
-        </Pressable>
+        {hasSavedGame ? (
+          <>
+            <Pressable
+              style={[styles.menuButton, styles.primaryButton]}
+              onPress={() => router.push({ pathname: '/game', params: { mode: 'resume' } })}
+            >
+              <Text style={styles.primaryButtonText}>Lanjutkan</Text>
+            </Pressable>
+            <Pressable
+              style={[styles.menuButton, { backgroundColor: theme.boardBackground }]}
+              onPress={handleNewGame}
+            >
+              <Text style={styles.menuButtonText}>Main Baru</Text>
+            </Pressable>
+          </>
+        ) : (
+          <Pressable style={[styles.menuButton, styles.primaryButton]} onPress={handleNewGame}>
+            <Text style={styles.primaryButtonText}>Main</Text>
+          </Pressable>
+        )}
 
         <Pressable
           style={[styles.menuButton, { backgroundColor: theme.boardBackground }]}
@@ -80,11 +112,7 @@ const styles = StyleSheet.create({
   title: { fontSize: 30, fontWeight: 'bold', marginBottom: 4, textAlign: 'center' },
   subtitle: { fontSize: 14, marginBottom: 32, opacity: 0.8 },
   menuList: { width: '100%', gap: 12 },
-  menuButton: {
-    borderRadius: 8,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
+  menuButton: { borderRadius: 8, paddingVertical: 14, alignItems: 'center' },
   primaryButton: { backgroundColor: '#8F7A66' },
   primaryButtonText: { color: '#FFFFFF', fontSize: 18, fontWeight: 'bold' },
   menuButtonText: { color: '#FFFFFF', fontSize: 16, fontWeight: '600' },

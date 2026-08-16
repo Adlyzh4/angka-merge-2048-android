@@ -9,6 +9,7 @@ import {
   spawnTileEntity,
   tilesToGrid,
 } from '../game-logic/tileEngine';
+import { SavedGameData } from '../services/storage';
 
 type Status = 'playing' | 'won' | 'gameover';
 
@@ -32,6 +33,16 @@ function getBestTile(tiles: TileEntity[]): number {
 function createInitialState(): GameState {
   const tiles = initTiles();
   return { tiles, score: 0, bestTile: getBestTile(tiles), status: 'playing', moveCount: 0 };
+}
+
+function createStateFromSaved(saved: SavedGameData): GameState {
+  return {
+    tiles: saved.tiles,
+    score: saved.score,
+    bestTile: saved.bestTile,
+    status: 'playing',
+    moveCount: saved.moveCount,
+  };
 }
 
 function reducer(state: GameState, action: GameAction): GameState {
@@ -71,8 +82,12 @@ function reducer(state: GameState, action: GameAction): GameState {
   }
 }
 
-export function useGameState() {
-  const [state, dispatch] = useReducer(reducer, undefined, createInitialState);
+export function useGameState(initialData?: SavedGameData | null) {
+  const [state, dispatch] = useReducer(
+    reducer,
+    undefined,
+    () => (initialData ? createStateFromSaved(initialData) : createInitialState())
+  );
 
   const swipe = useCallback((direction: Direction) => dispatch({ type: 'SWIPE', direction }), []);
   const restart = useCallback(() => dispatch({ type: 'RESTART' }), []);

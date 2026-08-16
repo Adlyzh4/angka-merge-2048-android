@@ -17,9 +17,10 @@ interface TileProps {
   cellSize: number;
   isNew?: boolean;
   isMerged?: boolean;
+  reduceMotion?: boolean; // optional prop to control animation
 }
 
-function TileComponent({ value, row, col, cellSize, isNew, isMerged }: TileProps) {
+function TileComponent({ value, row, col, cellSize, isNew, isMerged, reduceMotion }: TileProps) {
   const { bg, text } = getTileColor(value);
   const fontSize = value >= 1000 ? 22 : value >= 100 ? 26 : 32;
 
@@ -29,19 +30,28 @@ function TileComponent({ value, row, col, cellSize, isNew, isMerged }: TileProps
 
   // Animasi GESER — jalan tiap kali posisi row/col berubah
   useEffect(() => {
-    translateX.value = withTiming(col * cellSize, { duration: 120 });
-    translateY.value = withTiming(row * cellSize, { duration: 120 });
-  }, [row, col]);
+    if (reduceMotion) {
+      translateX.value = col * cellSize;
+      translateY.value = row * cellSize;
+    } else {
+      translateX.value = withTiming(col * cellSize, { duration: 120 });
+      translateY.value = withTiming(row * cellSize, { duration: 120 });
+    }
+  }, [row, col, reduceMotion]);
 
   // Animasi MUNCUL (tile baru) atau BOUNCE (habis merge)
   useEffect(() => {
+    if (reduceMotion) {
+      scale.value = 1;
+      return;
+    }
     if (isNew) {
       scale.value = 0.3;
       scale.value = withSpring(1, { damping: 12, stiffness: 220 });
     } else if (isMerged) {
-      scale.value = withSequence(withTiming(1.3, { duration: 120 }), withTiming(1, { duration: 120 }));
+      scale.value = withSequence(withTiming(1.15, { duration: 90 }), withTiming(1, { duration: 90 }));
     }
-  }, [isNew, isMerged]);
+  }, [isNew, isMerged, reduceMotion]);
 
   const animatedStyle = useAnimatedStyle(() => ({
     left: translateX.value + TILE_GAP / 2,

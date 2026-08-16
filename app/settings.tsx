@@ -11,7 +11,7 @@ const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.metaun
 const APP_VERSION = '1.0.0';
 
 export default function SettingsScreen() {
-  const { userData, isLoaded, toggleSound, toggleDarkMode, resetProgress, reload } = useHighScore();
+  const { userData, isLoaded, toggleSound, toggleDarkMode, resetProgress, reload, toggleReduceMotion } = useHighScore();
   const theme = getTheme(userData.settings.darkMode);
 
   useFocusEffect(
@@ -73,6 +73,10 @@ export default function SettingsScreen() {
         <View style={styles.row}>
           <Text style={[styles.rowLabel, { color: theme.textPrimary }]}>Mode Gelap</Text>
           <Switch value={userData.settings.darkMode} onValueChange={toggleDarkMode} />
+        </View>
+        <View style={styles.row}>
+            <Text style={[styles.rowLabel, { color: theme.textPrimary }]}>Kurangi Animasi</Text>
+            <Switch value={userData.settings.reduceMotion} onValueChange={toggleReduceMotion} />
         </View>
       </View>
 
