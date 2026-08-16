@@ -12,9 +12,10 @@ export interface TileEntity {
 
 export type Direction = 'up' | 'down' | 'left' | 'right';
 
-let idCounter = 1;
+let idCounter = Date.now();
 function nextId(): number {
-  return idCounter++;
+  idCounter += 1;
+  return idCounter;
 }
 
 function getEmptyCells(tiles: TileEntity[]): [number, number][] {
