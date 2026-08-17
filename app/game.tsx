@@ -6,7 +6,7 @@ import { router, useLocalSearchParams } from 'expo-router';
 import { Board } from '../src/components/Board';
 import { useGameState } from '../src/hooks/useGameState';
 import { useHighScore } from '../src/hooks/useHighScore';
-import { initSounds, playMergeSound, playGameOverSound } from '../src/services/sound';
+import { playMergeSound, playGameOverSound, playClickSound, initSounds } from '../src/services/sound';
 import { getTheme } from '../src/theme/colors';
 import { loadGameProgress, saveGameProgress, clearGameProgress, SavedGameData } from '../src/services/storage';
 
@@ -32,12 +32,8 @@ export default function GameScreen() {
 function GameScreenInner({ initialData }: { initialData: SavedGameData | null }) {
   const { state, swipe, restart, continueAfterWin } = useGameState(initialData);
   const { userData, isLoaded, updateAfterGame } = useHighScore();
-  const prevScoreRef = useRef(0);
+  const prevScoreRef = useRef(state.score);
   const theme = getTheme(userData.settings.darkMode);
-
-  useEffect(() => {
-    initSounds();
-  }, []);
 
   useEffect(() => {
     if (state.score > prevScoreRef.current) {
@@ -68,13 +64,14 @@ function GameScreenInner({ initialData }: { initialData: SavedGameData | null })
   }, [state.tiles, state.score, state.moveCount, state.status]);
 
   function handleRestartPress() {
+    playClickSound(userData.settings.soundEnabled);
     if (state.moveCount === 0) {
       restart();
       return;
     }
     Alert.alert('Restart Permainan?', 'Progress permainan saat ini akan hilang.', [
-      { text: 'Batal', style: 'cancel' },
-      { text: 'Restart', style: 'destructive', onPress: restart },
+      { text: 'Batal', style: 'cancel', onPress: () => { playClickSound(userData.settings.soundEnabled); } },
+      { text: 'Restart', style: 'destructive', onPress: () => { playClickSound(userData.settings.soundEnabled); restart(); } },
     ]);
   }
 
@@ -89,7 +86,10 @@ function GameScreenInner({ initialData }: { initialData: SavedGameData | null })
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.headerRow}>
-        <Pressable onPress={() => router.back()}>
+        <Pressable onPress={() => {
+          playClickSound(userData.settings.soundEnabled);
+          router.back();
+        }}>
           <Text style={[styles.backButton, { color: theme.textPrimary }]}>← Menu</Text>
         </Pressable>
       </View>

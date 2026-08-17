@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { useHighScore } from '../src/hooks/useHighScore';
 import { getTheme } from '../src/theme/colors';
+import { playClickSound } from '../src/services/sound';
 
 // Ganti dengan package name project lo, dipakai buat link rating & share
 const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.metaunitasdev.angkamerge2048';
@@ -58,7 +59,10 @@ export default function SettingsScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.headerRow}>
-        <Pressable onPress={() => router.back()}>
+        <Pressable onPress={() => {
+          playClickSound(userData.settings.soundEnabled);
+          router.back();
+        }}>
           <Text style={[styles.backButton, { color: theme.textPrimary }]}>← Menu</Text>
         </Pressable>
         <Text style={[styles.headerTitle, { color: theme.textPrimary }]}>Pengaturan</Text>

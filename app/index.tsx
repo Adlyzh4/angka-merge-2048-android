@@ -6,6 +6,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { useHighScore } from '../src/hooks/useHighScore';
 import { getTheme } from '../src/theme/colors';
 import { loadGameProgress } from '../src/services/storage';
+import { playClickSound } from '../src/services/sound';
 
 export default function MenuScreen() {
   const { userData, isLoaded, reload } = useHighScore();
@@ -20,23 +21,29 @@ export default function MenuScreen() {
   );
 
   function handleExit() {
+    playClickSound(userData.settings.soundEnabled);
     Alert.alert('Keluar Aplikasi?', 'Kamu yakin mau keluar dari Angka Merge 2048?', [
-      { text: 'Batal', style: 'cancel' },
-      { text: 'Keluar', style: 'destructive', onPress: () => BackHandler.exitApp() },
+      { text: 'Batal', style: 'cancel', onPress: () => { playClickSound(userData.settings.soundEnabled); } },
+      { text: 'Keluar', style: 'destructive', onPress: () => { playClickSound(userData.settings.soundEnabled); BackHandler.exitApp(); } },
     ]);
   }
 
   function handleNewGame() {
+    playClickSound(userData.settings.soundEnabled);
     if (hasSavedGame) {
       Alert.alert('Mulai Game Baru?', 'Progress permainan yang tersimpan akan hilang.', [
-        { text: 'Batal', style: 'cancel' },
+        { text: 'Batal', style: 'cancel', onPress: () => { playClickSound(userData.settings.soundEnabled); } },
         {
           text: 'Mulai Baru',
           style: 'destructive',
-          onPress: () => router.push({ pathname: '/game', params: { mode: 'new' } }),
+          onPress: () => {
+            playClickSound(userData.settings.soundEnabled);
+            router.push({ pathname: '/game', params: { mode: 'new' } });
+          },
         },
       ]);
     } else {
+        playClickSound(userData.settings.soundEnabled);
       router.push({ pathname: '/game', params: { mode: 'new' } });
     }
   }
@@ -47,6 +54,11 @@ export default function MenuScreen() {
         <Text style={{ color: theme.textPrimary }}>Memuat...</Text>
       </SafeAreaView>
     );
+  }
+
+  function navigateWithSound(path: string) {
+    playClickSound(userData.settings.soundEnabled);
+    router.push(path as any);
   }
 
   return (
@@ -61,7 +73,10 @@ export default function MenuScreen() {
           <>
             <Pressable
               style={[styles.menuButton, styles.primaryButton]}
-              onPress={() => router.push({ pathname: '/game', params: { mode: 'resume' } })}
+              onPress={() => {
+                playClickSound(userData.settings.soundEnabled);
+                router.push({ pathname: '/game', params: { mode: 'resume' } });
+              }}
             >
               <Text style={styles.primaryButtonText}>Lanjutkan</Text>
             </Pressable>
@@ -80,21 +95,21 @@ export default function MenuScreen() {
 
         <Pressable
           style={[styles.menuButton, { backgroundColor: theme.boardBackground }]}
-          onPress={() => router.push('/leaderboard')}
+          onPress={() => navigateWithSound('/leaderboard')}
         >
           <Text style={styles.menuButtonText}>Papan Skor</Text>
         </Pressable>
 
         <Pressable
           style={[styles.menuButton, { backgroundColor: theme.boardBackground }]}
-          onPress={() => router.push('/how-to-play')}
+          onPress={() => navigateWithSound('/how-to-play')}
         >
           <Text style={styles.menuButtonText}>Cara Main</Text>
         </Pressable>
 
         <Pressable
           style={[styles.menuButton, { backgroundColor: theme.boardBackground }]}
-          onPress={() => router.push('/settings')}
+          onPress={() => navigateWithSound('/settings')}
         >
           <Text style={styles.menuButtonText}>Pengaturan</Text>
         </Pressable>

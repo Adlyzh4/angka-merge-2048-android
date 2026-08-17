@@ -5,6 +5,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { useHighScore } from '../src/hooks/useHighScore';
 import { getTheme } from '../src/theme/colors';
+import { playClickSound } from '../src/services/sound';
 
 interface StepItemProps {
   number: string;
@@ -49,7 +50,10 @@ export default function HowToPlayScreen() {
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.headerRow}>
-        <Pressable onPress={() => router.back()}>
+        <Pressable onPress={() => {
+          playClickSound(userData.settings.soundEnabled);
+          router.back();
+        }}>
           <Text style={[styles.backButton, { color: theme.textPrimary }]}>← Menu</Text>
         </Pressable>
         <Text style={[styles.headerTitle, { color: theme.textPrimary }]}>Cara Main</Text>

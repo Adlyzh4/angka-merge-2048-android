@@ -37,7 +37,7 @@ function createInitialState(): GameState {
 
 function createStateFromSaved(saved: SavedGameData): GameState {
   return {
-    tiles: saved.tiles,
+    tiles: saved.tiles.map((t) => ({ ...t, isNew: false, isMerged: false })),
     score: saved.score,
     bestTile: saved.bestTile,
     status: 'playing',
