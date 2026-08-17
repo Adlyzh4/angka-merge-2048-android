@@ -26,20 +26,28 @@ export const defaultUserData: UserData = {
   },
 };
 
+let cachedUserData: UserData | null = null;
+
 export async function loadUserData(): Promise<UserData> {
   try {
     const raw = await AsyncStorage.getItem(STORAGE_KEY);
-    if (!raw) return defaultUserData;
-    return { ...defaultUserData, ...JSON.parse(raw) };
+    const result = raw ? { ...defaultUserData, ...JSON.parse(raw) } : defaultUserData;
+    cachedUserData = result;
+    return result;
   } catch (error) {
     console.error('Gagal load user data:', error);
     return defaultUserData;
   }
 }
 
+export function getCachedUserData(): UserData | null {
+  return cachedUserData;
+}
+
 export async function saveUserData(data: UserData): Promise<void> {
   try {
     await AsyncStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+    cachedUserData = data;
   } catch (error) {
     console.error('Gagal simpan user data:', error);
   }

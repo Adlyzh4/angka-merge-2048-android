@@ -46,8 +46,8 @@ function TileComponent({ value, row, col, cellSize, isNew, isMerged, reduceMotio
       return;
     }
     if (isNew) {
-      scale.value = 0.3;
-      scale.value = withSpring(1, { damping: 15, stiffness: 300 });
+      scale.value = 0.8;
+      scale.value = withSpring(1, { damping: 15, stiffness: 600 });
     } else if (isMerged) {
       scale.value = withSequence(withTiming(1.15, { duration: 90 }), withTiming(1, { duration: 90 }));
     }

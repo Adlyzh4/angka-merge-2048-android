@@ -1,10 +1,11 @@
 // src/hooks/useHighScore.ts
 import { useState, useEffect, useCallback } from 'react';
-import { loadUserData, saveUserData, resetUserData, UserData, defaultUserData } from '../services/storage';
+import { loadUserData, saveUserData, resetUserData, UserData, defaultUserData, getCachedUserData } from '../services/storage';
 
 export function useHighScore() {
-  const [userData, setUserData] = useState<UserData>(defaultUserData);
-  const [isLoaded, setIsLoaded] = useState(false);
+  const cached = getCachedUserData();
+  const [userData, setUserData] = useState<UserData>(cached ?? defaultUserData);
+  const [isLoaded, setIsLoaded] = useState(!!cached);
 
   useEffect(() => {
     loadUserData().then((data) => {

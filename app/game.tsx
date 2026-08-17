@@ -8,22 +8,25 @@ import { useGameState } from '../src/hooks/useGameState';
 import { useHighScore } from '../src/hooks/useHighScore';
 import { playMergeSound, playGameOverSound, playClickSound, initSounds } from '../src/services/sound';
 import { getTheme } from '../src/theme/colors';
-import { loadGameProgress, saveGameProgress, clearGameProgress, SavedGameData } from '../src/services/storage';
+import { loadGameProgress, saveGameProgress, clearGameProgress, SavedGameData, getCachedUserData } from '../src/services/storage';
 
 export default function GameScreen() {
   const { mode } = useLocalSearchParams<{ mode?: string }>();
-  const [savedData, setSavedData] = useState<SavedGameData | null | undefined>(undefined);
+  // Kalau bukan mode 'resume', kita nggak perlu nunggu apapun jadi langsung null dari awal (no flash sama sekali)
+  const [savedData, setSavedData] = useState<SavedGameData | null | undefined>(
+    mode === 'resume' ? undefined : null
+  );
 
   useEffect(() => {
     if (mode === 'resume') {
       loadGameProgress().then(setSavedData);
-    } else {
-      setSavedData(null);
     }
   }, [mode]);
 
   if (savedData === undefined) {
-    return <View style={{ flex: 1, backgroundColor: '#FAF8EF' }} />;
+    const cached = getCachedUserData();
+    const bgColor = cached?.settings.darkMode ? '#1A1A1A' : '#FAF8EF';
+    return <View style={{ flex: 1, backgroundColor: bgColor }} />;
   }
 
   return <GameScreenInner initialData={savedData} />;
