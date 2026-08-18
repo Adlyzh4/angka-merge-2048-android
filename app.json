@@ -31,7 +31,15 @@
     "plugins": [
       "expo-router",
       "expo-audio",
-      "expo-asset"
+      "expo-asset",
+      [
+        "react-native-google-mobile-ads",
+        {
+          "androidAppId": "ca-app-pub-1868043610140076~9586296654",
+          "iosAppId": "ca-app-pub-1868043610140076~9586296654"
+        }
+      ],
+        "expo-build-properties"
     ],
     "extra": {
       "router": {},
