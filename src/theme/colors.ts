@@ -19,3 +19,12 @@ export const darkTheme = {
 export function getTheme(isDark: boolean) {
   return isDark ? darkTheme : lightTheme;
 }
+
+export const menuTheme = {
+  textPrimary: '#7A3E1D',
+  textOnDark: '#FFFFFF',
+  primaryButton: '#FF8A3D',
+  secondaryButton: '#FFFBF3',
+  secondaryButtonText: '#E8703C',
+  exitBorder: '#B0413E',
+};

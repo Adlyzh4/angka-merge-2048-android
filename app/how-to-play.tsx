@@ -54,7 +54,7 @@ export default function HowToPlayScreen() {
           playClickSound(userData.settings.soundEnabled);
           router.back();
         }}>
-          <Text style={[styles.backButton, { color: theme.textPrimary }]}>← Menu</Text>
+          <Text style={[styles.backButton, { color: theme.textPrimary }]}> Menu</Text>
         </Pressable>
         <Text style={[styles.headerTitle, { color: theme.textPrimary }]}>Cara Main</Text>
         <View style={{ width: 50 }} />

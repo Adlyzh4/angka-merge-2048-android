@@ -73,7 +73,7 @@ export default function LeaderboardScreen() {
           playClickSound(userData.settings.soundEnabled);
           router.back();
         }}>
-          <Text style={[styles.backButton, { color: theme.textPrimary }]}>← Menu</Text>
+          <Text style={[styles.backButton, { color: theme.textPrimary }]}> Menu</Text>
         </Pressable>
         <Text style={[styles.headerTitle, { color: theme.textPrimary }]}>Papan Skor</Text>
         <View style={{ width: 50 }} />

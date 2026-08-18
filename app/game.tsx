@@ -112,7 +112,7 @@ function GameScreenInner({ initialData }: { initialData: SavedGameData | null })
           playClickSound(userData.settings.soundEnabled);
           router.back();
         }}>
-          <Text style={[styles.backButton, { color: theme.textPrimary }]}>← Menu</Text>
+          <Text style={[styles.backButton, { color: theme.textPrimary }]}> Menu</Text>
         </Pressable>
       </View>
 
@@ -125,6 +125,9 @@ function GameScreenInner({ initialData }: { initialData: SavedGameData | null })
           <Text style={styles.scoreLabel}>TERBAIK</Text>
           <Text style={styles.scoreValue}>{userData.highScore}</Text>
         </View>
+      </View>
+
+      <View style={styles.scoreRow}>
         <Pressable
           style={[
             styles.undoButton,

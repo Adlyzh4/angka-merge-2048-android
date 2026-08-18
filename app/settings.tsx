@@ -63,7 +63,7 @@ export default function SettingsScreen() {
           playClickSound(userData.settings.soundEnabled);
           router.back();
         }}>
-          <Text style={[styles.backButton, { color: theme.textPrimary }]}>← Menu</Text>
+          <Text style={[styles.backButton, { color: theme.textPrimary }]}> Menu</Text>
         </Pressable>
         <Text style={[styles.headerTitle, { color: theme.textPrimary }]}>Pengaturan</Text>
         <View style={{ width: 50 }} />
