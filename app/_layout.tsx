@@ -5,6 +5,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { initSounds } from '../src/services/sound';
 import { useHighScore } from '../src/hooks/useHighScore';
 import { getTheme } from '../src/theme/colors';
+import mobileAds from 'react-native-google-mobile-ads';
 
 export default function RootLayout() {
   const { userData } = useHighScore();
@@ -12,6 +13,14 @@ export default function RootLayout() {
 
   useEffect(() => {
     initSounds();
+  }, []);
+
+  useEffect(() => {
+    mobileAds()
+        .initialize()
+        .then(() => {
+        console.log('AdMob SDK initialized');
+        });
   }, []);
 
   return (

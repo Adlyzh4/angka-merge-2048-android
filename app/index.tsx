@@ -1,16 +1,18 @@
 // app/index.tsx
 import React, { useCallback, useState } from 'react';
 import { View, Text, Pressable, StyleSheet, Alert, BackHandler, ImageBackground } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { router, useFocusEffect } from 'expo-router';
 import { useHighScore } from '../src/hooks/useHighScore';
 import { menuTheme } from '../src/theme/colors';
 import { loadGameProgress } from '../src/services/storage';
 import { playClickSound } from '../src/services/sound';
+import { BannerAdView } from '../src/components/BannerAdView';
 
 export default function MenuScreen() {
   const { userData, isLoaded, reload } = useHighScore();
   const [hasSavedGame, setHasSavedGame] = useState(false);
+  const insets = useSafeAreaInsets();
 
   useFocusEffect(
     useCallback(() => {
@@ -115,6 +117,10 @@ export default function MenuScreen() {
             <Text style={styles.exitButtonText}>Keluar</Text>
           </Pressable>
         </View>
+
+        <View style={[styles.bannerWrap, { bottom: insets.bottom + 12 }]}>
+            <BannerAdView />
+        </View>
       </SafeAreaView>
     </ImageBackground>
   );
@@ -166,4 +172,9 @@ const styles = StyleSheet.create({
     elevation: 0,
   },
   exitButtonText: { color: '#B0413E', fontSize: 16, fontWeight: '600' },
+  bannerWrap: {
+    position: 'absolute',
+    width: '100%',
+    alignItems: 'center',
+  },
 });

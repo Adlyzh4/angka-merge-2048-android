@@ -9,6 +9,8 @@ import { useHighScore } from '../src/hooks/useHighScore';
 import { playMergeSound, playGameOverSound, playClickSound, initSounds } from '../src/services/sound';
 import { getTheme } from '../src/theme/colors';
 import { loadGameProgress, saveGameProgress, clearGameProgress, SavedGameData, getCachedUserData } from '../src/services/storage';
+import { useInterstitialAd } from '../src/hooks/useInterstitialAd';
+import { useRewardedAd } from '../src/hooks/useRewardedAd';
 
 export default function GameScreen() {
   const { mode } = useLocalSearchParams<{ mode?: string }>();
@@ -34,7 +36,12 @@ export default function GameScreen() {
 
 function GameScreenInner({ initialData }: { initialData: SavedGameData | null }) {
   const { state, swipe, restart, continueAfterWin, undo, addUndos, canUndo } = useGameState(initialData);
+  const { showAd } = useInterstitialAd();
+  const hasShownAdRef = useRef(false);
   const { userData, isLoaded, updateAfterGame } = useHighScore();
+  const { showAd: showRewardedAd, isLoaded: rewardedAdLoaded } = useRewardedAd(() => {
+    addUndos(5);
+  });
   const prevScoreRef = useRef(state.score);
   const theme = getTheme(userData.settings.darkMode);
 
@@ -49,6 +56,11 @@ function GameScreenInner({ initialData }: { initialData: SavedGameData | null })
     if (state.status === 'gameover') {
       playGameOverSound(userData.settings.soundEnabled);
       updateAfterGame(state.score, state.bestTile);
+
+      if (!hasShownAdRef.current) {
+        hasShownAdRef.current = true;
+        setTimeout(() => showAd(), 800); // beri jeda dikit biar user sempat lihat overlay game over dulu
+      }
     }
   }, [state.status]);
 
@@ -83,15 +95,23 @@ function GameScreenInner({ initialData }: { initialData: SavedGameData | null })
     playClickSound(userData.settings.soundEnabled);
 
     if (state.undoCount <= 0) {
+      if (!rewardedAdLoaded) {
+        Alert.alert('Iklan Belum Siap', 'Coba lagi sebentar lagi ya.');
+        return;
+      }
       Alert.alert(
-        'Undo Habis',
-        'Kamu sudah menggunakan semua jatah undo. Fitur nonton iklan untuk menambah undo akan segera hadir!'
+        'Tambah 5 Undo?',
+        'Tonton iklan singkat untuk mendapatkan 5 undo tambahan.',
+        [
+          { text: 'Batal', style: 'cancel' },
+          { text: 'Tonton Iklan', onPress: () => showRewardedAd() },
+        ]
       );
       return;
     }
 
     if (!canUndo) {
-      return; // belum ada gerakan yang bisa di-undo
+      return;
     }
 
     undo();
@@ -131,11 +151,16 @@ function GameScreenInner({ initialData }: { initialData: SavedGameData | null })
         <Pressable
           style={[
             styles.undoButton,
-            { backgroundColor: theme.boardBackground, opacity: canUndo ? 1 : 0.5 },
+            {
+              backgroundColor: state.undoCount <= 0 ? '#4A9D6E' : theme.boardBackground,
+              opacity: state.undoCount <= 0 || canUndo ? 1 : 0.5,
+            },
           ]}
           onPress={handleUndoPress}
         >
-          <Text style={styles.undoText}>↩️ {state.undoCount}</Text>
+          <Text style={styles.undoText}>
+            {state.undoCount <= 0 ? '📺 Iklan' : `↩️ ${state.undoCount}`}
+          </Text>
         </Pressable>
         <Pressable
           style={[styles.restartButton, { backgroundColor: theme.buttonBackground }]}
