@@ -66,6 +66,7 @@ export interface SavedGameData {
   score: number;
   bestTile: number;
   moveCount: number;
+  undoCount: number;
 }
 
 export async function saveGameProgress(data: SavedGameData): Promise<void> {

@@ -33,7 +33,7 @@ export default function GameScreen() {
 }
 
 function GameScreenInner({ initialData }: { initialData: SavedGameData | null }) {
-  const { state, swipe, restart, continueAfterWin } = useGameState(initialData);
+  const { state, swipe, restart, continueAfterWin, undo, addUndos, canUndo } = useGameState(initialData);
   const { userData, isLoaded, updateAfterGame } = useHighScore();
   const prevScoreRef = useRef(state.score);
   const theme = getTheme(userData.settings.darkMode);
@@ -63,8 +63,9 @@ function GameScreenInner({ initialData }: { initialData: SavedGameData | null })
       score: state.score,
       bestTile: state.bestTile,
       moveCount: state.moveCount,
+      undoCount: state.undoCount,
     });
-  }, [state.tiles, state.score, state.moveCount, state.status]);
+  }, [state.tiles, state.score, state.moveCount, state.status, state.undoCount]);
 
   function handleRestartPress() {
     playClickSound(userData.settings.soundEnabled);
@@ -76,6 +77,24 @@ function GameScreenInner({ initialData }: { initialData: SavedGameData | null })
       { text: 'Batal', style: 'cancel', onPress: () => { playClickSound(userData.settings.soundEnabled); } },
       { text: 'Restart', style: 'destructive', onPress: () => { playClickSound(userData.settings.soundEnabled); restart(); } },
     ]);
+  }
+
+  function handleUndoPress() {
+    playClickSound(userData.settings.soundEnabled);
+
+    if (state.undoCount <= 0) {
+      Alert.alert(
+        'Undo Habis',
+        'Kamu sudah menggunakan semua jatah undo. Fitur nonton iklan untuk menambah undo akan segera hadir!'
+      );
+      return;
+    }
+
+    if (!canUndo) {
+      return; // belum ada gerakan yang bisa di-undo
+    }
+
+    undo();
   }
 
   if (!isLoaded) {
@@ -106,6 +125,15 @@ function GameScreenInner({ initialData }: { initialData: SavedGameData | null })
           <Text style={styles.scoreLabel}>TERBAIK</Text>
           <Text style={styles.scoreValue}>{userData.highScore}</Text>
         </View>
+        <Pressable
+          style={[
+            styles.undoButton,
+            { backgroundColor: theme.boardBackground, opacity: canUndo ? 1 : 0.5 },
+          ]}
+          onPress={handleUndoPress}
+        >
+          <Text style={styles.undoText}>↩️ {state.undoCount}</Text>
+        </Pressable>
         <Pressable
           style={[styles.restartButton, { backgroundColor: theme.buttonBackground }]}
           onPress={handleRestartPress}
@@ -148,6 +176,8 @@ const styles = StyleSheet.create({
   scoreValue: { color: '#FFFFFF', fontSize: 18, fontWeight: 'bold' },
   restartButton: { borderRadius: 6, paddingVertical: 10, paddingHorizontal: 14 },
   restartText: { color: '#FFFFFF', fontWeight: 'bold' },
+  undoButton: { borderRadius: 6, paddingVertical: 10, paddingHorizontal: 14 },
+  undoText: { color: '#FFFFFF', fontWeight: 'bold', fontSize: 14 },
   overlay: {
     position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
     backgroundColor: 'rgba(238, 228, 218, 0.9)',
