@@ -11,6 +11,8 @@ import { getTheme } from '../src/theme/colors';
 import { loadGameProgress, saveGameProgress, clearGameProgress, SavedGameData, getCachedUserData } from '../src/services/storage';
 import { useInterstitialAd } from '../src/hooks/useInterstitialAd';
 import { useRewardedAd } from '../src/hooks/useRewardedAd';
+import { Ionicons } from '@expo/vector-icons';
+
 
 export default function GameScreen() {
   const { mode } = useLocalSearchParams<{ mode?: string }>();
@@ -166,7 +168,7 @@ function GameScreenInner({ initialData }: { initialData: SavedGameData | null })
           style={[styles.restartButton, { backgroundColor: theme.buttonBackground }]}
           onPress={handleRestartPress}
         >
-          <Text style={styles.restartText}>Restart</Text>
+          <Text style={styles.restartText}><Ionicons name="refresh" size={18} color="silver" /> Restart</Text>
         </Pressable>
       </View>
 

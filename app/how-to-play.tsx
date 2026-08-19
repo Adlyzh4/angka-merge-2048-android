@@ -6,6 +6,7 @@ import { router, useFocusEffect } from 'expo-router';
 import { useHighScore } from '../src/hooks/useHighScore';
 import { getTheme } from '../src/theme/colors';
 import { playClickSound } from '../src/services/sound';
+import { Ionicons } from '@expo/vector-icons';
 
 interface StepItemProps {
   number: string;
@@ -103,7 +104,7 @@ export default function HowToPlayScreen() {
         />
 
         <View style={[styles.tipBox, { backgroundColor: theme.boardBackground }]}>
-          <Text style={styles.tipTitle}>💡 Tips</Text>
+          <Text style={styles.tipTitle}><Ionicons name="bulb-outline" size={18} color="yellow" /> Tips</Text>
           <Text style={styles.tipText}>
             Coba fokuskan angka besar di salah satu sudut papan. Ini memudahkan kamu mengatur strategi penggabungan tanpa membuat papan cepat penuh.
           </Text>

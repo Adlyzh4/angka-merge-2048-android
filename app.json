@@ -39,7 +39,8 @@
           "iosAppId": "ca-app-pub-1868043610140076~9586296654"
         }
       ],
-        "expo-build-properties"
+      "expo-build-properties",
+      "expo-font"
     ],
     "extra": {
       "router": {},
