@@ -7,6 +7,8 @@ import { useHighScore } from '../src/hooks/useHighScore';
 import { getTheme } from '../src/theme/colors';
 import { playClickSound } from '../src/services/sound';
 import { Ionicons } from '@expo/vector-icons';
+import { BannerAdView } from '../src/components/BannerAdView';
+
 
 interface StepItemProps {
   number: string;
@@ -110,6 +112,7 @@ export default function HowToPlayScreen() {
           </Text>
         </View>
       </ScrollView>
+      <BannerAdView/>
     </SafeAreaView>
   );
 }

@@ -7,6 +7,8 @@ import { useHighScore } from '../src/hooks/useHighScore';
 import { getTheme } from '../src/theme/colors';
 import { playClickSound } from '../src/services/sound';
 import { Ionicons } from '@expo/vector-icons';
+import { PRIVACY_POLICY_URL } from '../src/constants/adConfig';
+import { BannerAdView } from '../src/components/BannerAdView';
 
 // Ganti dengan package name project lo, dipakai buat link rating & share
 const PLAY_STORE_URL = 'https://play.google.com/store/apps/details?id=com.metaunitasdev.angkamerge2048';
@@ -103,12 +105,20 @@ export default function SettingsScreen() {
         <Pressable style={styles.actionRow} onPress={handleShare}>
           <Text style={[styles.rowLabel, { color: theme.textPrimary }]}><Ionicons name="share-social" size={18} color="blue" /> Bagikan Game</Text>
         </Pressable>
+        <Pressable
+            style={styles.actionRow}
+            onPress={() => Linking.openURL(PRIVACY_POLICY_URL)}
+        >
+            <Text style={[styles.rowLabel, { color: theme.textPrimary }]}><Ionicons name="document-lock" size={18} color="black" /> Kebijakan Privasi</Text>
+        </Pressable>
         <Pressable style={styles.actionRow} onPress={handleResetProgress}>
           <Text style={[styles.rowLabel, { color: '#B0413E' }]}><Ionicons name="trash" size={18} color="silver" /> Reset Progress</Text>
         </Pressable>
       </View>
 
       <Text style={[styles.versionText, { color: theme.textPrimary }]}>Versi {APP_VERSION}</Text>
+
+      <BannerAdView/>
     </SafeAreaView>
   );
 }

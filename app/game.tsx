@@ -72,13 +72,18 @@ function GameScreenInner({ initialData }: { initialData: SavedGameData | null })
       clearGameProgress();
       return;
     }
-    saveGameProgress({
-      tiles: state.tiles,
-      score: state.score,
-      bestTile: state.bestTile,
-      moveCount: state.moveCount,
-      undoCount: state.undoCount,
-    });
+
+    const timeoutId = setTimeout(() => {
+      saveGameProgress({
+        tiles: state.tiles,
+        score: state.score,
+        bestTile: state.bestTile,
+        moveCount: state.moveCount,
+        undoCount: state.undoCount,
+      });
+    }, 400);
+
+    return () => clearTimeout(timeoutId);
   }, [state.tiles, state.score, state.moveCount, state.status, state.undoCount]);
 
   function handleRestartPress() {
@@ -91,6 +96,24 @@ function GameScreenInner({ initialData }: { initialData: SavedGameData | null })
       { text: 'Batal', style: 'cancel', onPress: () => { playClickSound(userData.settings.soundEnabled); } },
       { text: 'Restart', style: 'destructive', onPress: () => { playClickSound(userData.settings.soundEnabled); restart(); } },
     ]);
+  }
+
+  function handleBackPress() {
+    playClickSound(userData.settings.soundEnabled);
+
+    if (state.moveCount === 0) {
+      router.back();
+      return;
+    }
+
+    Alert.alert(
+      'Keluar ke Menu?',
+      'Progress permainanmu akan otomatis tersimpan dan bisa dilanjutkan nanti.',
+      [
+        { text: 'Batal', style: 'cancel' },
+        { text: 'Keluar', onPress: () => router.back() },
+      ]
+    );
   }
 
   function handleUndoPress() {
@@ -130,10 +153,7 @@ function GameScreenInner({ initialData }: { initialData: SavedGameData | null })
   return (
     <SafeAreaView style={[styles.container, { backgroundColor: theme.background }]}>
       <View style={styles.headerRow}>
-        <Pressable onPress={() => {
-          playClickSound(userData.settings.soundEnabled);
-          router.back();
-        }}>
+        <Pressable onPress={handleBackPress}>
           <Text style={[styles.backButton, { color: theme.textPrimary }]}> Menu</Text>
         </Pressable>
       </View>

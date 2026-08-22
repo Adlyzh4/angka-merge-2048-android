@@ -7,6 +7,8 @@ import { useHighScore } from '../src/hooks/useHighScore';
 import { getTheme } from '../src/theme/colors';
 import { generateLeaderboard, LeaderboardEntry } from '../src/game-logic/leaderboardData';
 import { playClickSound } from '../src/services/sound';
+import { BannerAdView } from '../src/components/BannerAdView';
+
 
 const MEDALS = ['🥇', '🥈', '🥉'];
 
@@ -98,6 +100,7 @@ export default function LeaderboardScreen() {
           />
         )}
       />
+      <BannerAdView/>
     </SafeAreaView>
   );
 }

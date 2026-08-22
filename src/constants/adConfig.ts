@@ -16,3 +16,5 @@ export const INTERSTITIAL_AD_UNIT_ID = USE_TEST_ADS
 export const REWARDED_AD_UNIT_ID = USE_TEST_ADS
   ? TestIds.REWARDED
   : 'ca-app-pub-1868043610140076/7746601371'; // ganti dengan Rewarded Ad Unit ID
+
+export const PRIVACY_POLICY_URL = 'https://metaunitasdev.github.io/angka-merge-2048-privacy/';
