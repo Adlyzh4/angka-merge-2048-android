@@ -3,7 +3,7 @@ import { TestIds } from 'react-native-google-mobile-ads';
 
 // GANTI __DEV__ check ini nanti pas mau build production sungguhan.
 // Selama development, SELALU pakai Test IDs bawaan Google.
-const USE_TEST_ADS = false; // ganti manual jadi `false` cuma pas build production final
+const USE_TEST_ADS = true; // ganti manual jadi `false` cuma pas build production final
 
 export const BANNER_AD_UNIT_ID = USE_TEST_ADS
   ? TestIds.BANNER
